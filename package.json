@@ -1,0 +1,30 @@
+{
+    "name": "@dpos-info/core-voter-count",
+    "description": "Keeps track of the delegate voter count and adds it to the API response",
+    "homepage": "https://github.com/dpos-info/core-voter-count",
+    "version": "1.0.0",
+    "author": [
+        "Edgar Goetzendorff <contact@dpos.info>"
+    ],
+    "license": "MIT",
+    "main": "dist/index.js",
+    "files": [
+        "dist/"
+    ],
+    "scripts": {
+        "build": "pnpm clean && tsc",
+        "build:watch": "pnpm clean && pnpm compile -w",
+        "clean": "rimraf dist",
+        "compile": "node ../../node_modules/typescript/bin/tsc",
+        "lint": "../../node_modules/eslint/bin/eslint.js . --ext .ts --fix",
+        "prettier": "prettier --write './**/*.{ts,js,json,md}'",
+        "format": "pnpm lint && pnpm prettier"
+    },
+    "prettier": {
+        "printWidth": 180,
+        "singleQuote": false,
+        "tabWidth": 4,
+        "trailingComma": "all",
+        "useTabs": false
+    }
+}
