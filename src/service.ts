@@ -107,16 +107,20 @@ export class Service {
     }
 
     private async handleBuilderFinished(): Promise<void> {
-        for (const [index, voter] of this.walletRepository.allByPublicKey().entries()) {
+        let first = true;
+
+        for (const voter of this.walletRepository.allByPublicKey()) {
             if (voter.hasVoted()) {
                 const delegateWallet: Contracts.State.Wallet = this.walletRepository.findByPublicKey(voter.getAttribute("vote"));
 
-                if (index === 0 && delegateWallet.hasAttribute("delegate.voterCount") && delegateWallet.getAttribute("delegate.voterCount") !== undefined) {
+                if (first && delegateWallet.hasAttribute("delegate.voterCount") && delegateWallet.getAttribute("delegate.voterCount") !== undefined) {
                     break;
                 }
 
                 const voterCount: number = delegateWallet.getAttribute("delegate.voterCount", 0);
                 delegateWallet.setAttribute("delegate.voterCount", voterCount + 1);
+
+                first = false;
             }
         }
     }
