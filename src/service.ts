@@ -25,7 +25,7 @@ export class Service {
     private readonly walletRepository!: Contracts.State.WalletRepository;
 
     public async register(): Promise<void> {
-        this.log("Registering");
+        this.log("Registering Plugin");
 
         if (!this.attributeSet.has("delegate.voterCount")) {
             this.attributeSet.set("delegate.voterCount");
@@ -36,14 +36,6 @@ export class Service {
                 this.handleBuilderFinished();
             },
         });
-    }
-
-    public async boot(): Promise<void> {
-        this.log("Booting");
-
-        const server: Server = this.app.get<Server>(ApiIdentifiers.HTTP);
-
-        this.extendDelegatesApi(server);
 
         this.events.listen(AppEnums.TransactionEvent.Applied, {
             handle: (data) => {
@@ -56,6 +48,14 @@ export class Service {
                 this.handleTransaction(data, true);
             },
         });
+    }
+
+    public async boot(): Promise<void> {
+        this.log("Booting Plugin");
+
+        const server: Server = this.app.get<Server>(ApiIdentifiers.HTTP);
+
+        this.extendDelegatesApi(server);
     }
 
     public dispose(): void {
@@ -107,9 +107,13 @@ export class Service {
     }
 
     private async handleBuilderFinished(): Promise<void> {
-        for (const voter of this.walletRepository.allByPublicKey()) {
+        for (const [index, voter] of this.walletRepository.allByPublicKey().entries()) {
             if (voter.hasVoted()) {
                 const delegateWallet: Contracts.State.Wallet = this.walletRepository.findByPublicKey(voter.getAttribute("vote"));
+
+                if (index === 0 && delegateWallet.hasAttribute("delegate.voterCount") && delegateWallet.getAttribute("delegate.voterCount") !== undefined) {
+                    break;
+                }
 
                 const voterCount: number = delegateWallet.getAttribute("delegate.voterCount", 0);
                 delegateWallet.setAttribute("delegate.voterCount", voterCount + 1);
