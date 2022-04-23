@@ -2,7 +2,7 @@
     "name": "@dpos-info/core-voter-count",
     "description": "Keeps track of the delegate voter count and adds it to the API response",
     "homepage": "https://github.com/dpos-info/core-voter-count",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "author": [
         "Edgar Goetzendorff <contact@dpos.info>"
     ],
