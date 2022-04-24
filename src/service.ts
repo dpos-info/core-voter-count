@@ -98,10 +98,14 @@ export class Service {
                 // @ts-ignore
                 const originalResponse = await originalDelegatesRouteHandler(request);
 
-                return {
-                    ...originalResponse,
-                    data: transform(originalResponse.data),
-                };
+                if (originalResponse.data) {
+                    return {
+                        ...originalResponse,
+                        data: transform(originalResponse.data),
+                    };
+                }
+
+                return originalResponse;
             };
         }
     }
