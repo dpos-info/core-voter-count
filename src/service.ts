@@ -3,7 +3,7 @@ import { Container, Contracts, Enums as AppEnums, Services } from "@arkecosystem
 import { Enums } from "@arkecosystem/crypto";
 
 type ExtendedDelegateResource = {
-    voterCount?: number;
+    voters?: number;
 } & Resources.DelegateResource;
 
 @Container.injectable()
@@ -27,8 +27,8 @@ export class Service {
     public async register(): Promise<void> {
         this.log("Registering Plugin");
 
-        if (!this.attributeSet.has("delegate.voterCount")) {
-            this.attributeSet.set("delegate.voterCount");
+        if (!this.attributeSet.has("delegate.voters")) {
+            this.attributeSet.set("delegate.voters");
         }
 
         this.events.listen(AppEnums.StateEvent.BuilderFinished, {
@@ -59,15 +59,15 @@ export class Service {
     }
 
     public dispose(): void {
-        if (this.attributeSet.has("delegate.voterCount")) {
-            this.attributeSet.forget("delegate.voterCount");
+        if (this.attributeSet.has("delegate.voters")) {
+            this.attributeSet.forget("delegate.voters");
         }
     }
 
     private extendDelegatesApi(server: Server): void {
         const transform = (delegate: ExtendedDelegateResource) => {
             const delegateWallet: Contracts.State.Wallet = this.walletRepository.findByPublicKey(delegate.publicKey);
-            delegate.voterCount = delegateWallet.getAttribute("delegate.voterCount", 0);
+            delegate.voters = delegateWallet.getAttribute("delegate.voters", 0);
             return delegate;
         };
 
@@ -117,12 +117,12 @@ export class Service {
             if (voter.hasVoted()) {
                 const delegateWallet: Contracts.State.Wallet = this.walletRepository.findByPublicKey(voter.getAttribute("vote"));
 
-                if (first && delegateWallet.hasAttribute("delegate.voterCount") && delegateWallet.getAttribute("delegate.voterCount") !== undefined) {
+                if (first && delegateWallet.hasAttribute("delegate.voters") && delegateWallet.getAttribute("delegate.voters") !== undefined) {
                     break;
                 }
 
-                const voterCount: number = delegateWallet.getAttribute("delegate.voterCount", 0);
-                delegateWallet.setAttribute("delegate.voterCount", voterCount + 1);
+                const voters: number = delegateWallet.getAttribute("delegate.voters", 0);
+                delegateWallet.setAttribute("delegate.voters", voters + 1);
 
                 first = false;
             }
@@ -149,15 +149,15 @@ export class Service {
                 delegateWallet = this.walletRepository.findByUsername(identifier);
             }
 
-            let voterCount: number = delegateWallet.getAttribute("delegate.voterCount", 0);
+            let voters: number = delegateWallet.getAttribute("delegate.voters", 0);
 
             if (vote.startsWith("+")) {
-                voterCount = voterCount + (revert ? -1 : 1);
+                voters = voters + (revert ? -1 : 1);
             } else {
-                voterCount = voterCount - (revert ? -1 : 1);
+                voters = voters - (revert ? -1 : 1);
             }
 
-            delegateWallet.setAttribute("delegate.voterCount", voterCount);
+            delegateWallet.setAttribute("delegate.voters", voters);
         }
     }
 

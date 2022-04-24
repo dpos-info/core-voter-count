@@ -26,7 +26,7 @@ At the time of writing, the Core API offers no way to easily retrieve the voter 
             "rewards": "0",
             "total": "0"
         },
-        "voterCount": 1 // <-- yay
+        "voters": 1 // <-- yay
     }
 }
 ```
