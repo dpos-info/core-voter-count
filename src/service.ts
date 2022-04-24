@@ -135,7 +135,16 @@ export class Service {
 
     private handleVote(votes, revert): void {
         for (const vote of votes) {
-            const delegateWallet: Contracts.State.Wallet = this.walletRepository.findByPublicKey(vote.slice(1));
+            let delegateWallet: Contracts.State.Wallet;
+
+            const identifier = vote.slice(1);
+
+            if (identifier.length === 66) {
+                delegateWallet = this.walletRepository.findByPublicKey(identifier);
+            } else {
+                delegateWallet = this.walletRepository.findByUsername(identifier);
+            }
+
             let voterCount: number = delegateWallet.getAttribute("delegate.voterCount", 0);
 
             if (vote.startsWith("+")) {
