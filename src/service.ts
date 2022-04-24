@@ -127,21 +127,9 @@ export class Service {
 
     private handleTransaction({ data }, revert = false): void {
         if (data.typeGroup === Enums.TransactionTypeGroup.Core) {
-            if (data.type === Enums.TransactionType.DelegateRegistration) {
-                this.handleDelegateRegistration(data.senderPublicKey, revert);
-            } else if (data.type === Enums.TransactionType.Vote) {
+            if (data.type === Enums.TransactionType.Vote) {
                 this.handleVote(data.asset.votes, revert);
             }
-        }
-    }
-
-    private handleDelegateRegistration(senderPublicKey, revert): void {
-        const delegate: Contracts.State.Wallet = this.walletRepository.findByPublicKey(senderPublicKey);
-
-        if (revert) {
-            delegate.forgetAttribute("delegate.voterCount");
-        } else {
-            delegate.setAttribute("delegate.voterCount", 0);
         }
     }
 
