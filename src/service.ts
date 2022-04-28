@@ -130,10 +130,16 @@ export class Service {
     }
 
     private handleTransaction({ data }, revert = false): void {
-        if (data.typeGroup === Enums.TransactionTypeGroup.Core) {
-            if (data.type === Enums.TransactionType.Vote) {
-                this.handleVote(data.asset.votes, revert);
+        const isVote = (type: number, typeGroup: number) => {
+            if (typeGroup === Enums.TransactionTypeGroup.Core && (type === (Enums.TransactionType as any).Core?.Vote || type === Enums.TransactionType.Vote)) {
+                return true;
             }
+
+            return false;
+        };
+
+        if (isVote(data.type, data.typeGroup)) {
+            this.handleVote(data.asset.votes, revert);
         }
     }
 
@@ -157,11 +163,13 @@ export class Service {
                 voters = voters - (revert ? -1 : 1);
             }
 
+            this.log(`Setting ${delegateWallet.getAttribute("delegate.username")} voters to ${voters}`, "debug");
+
             delegateWallet.setAttribute("delegate.voters", voters);
         }
     }
 
-    private log(message: string, type: "info" | "error" = "info") {
+    private log(message: string, type: "debug" | "info" | "error" = "info") {
         this.logger[type](`[@dpos-info/voter-count] ${message}`);
     }
 }
